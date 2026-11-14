@@ -1,0 +1,29 @@
+<dialog #dialog aria-labelledby="character-detail-title" (close)="clearSelection()" (click)="$event.target === dialog && close()">
+  <div class="dialog-content">
+    <button class="close-button" type="button" aria-label="Cerrar detalles" autofocus (click)="close()">×</button>
+    @if (details(); as state) {
+      @let person = state.character;
+      <img [src]="person.image" alt="" width="300" height="300">
+      <div class="description">
+        <span class="status" [attr.data-status]="person.status">{{ statusLabels[person.status] }}</span>
+        <h2 id="character-detail-title">{{ person.name }}</h2>
+        @switch (state.kind) {
+          @case ('loading') { <p role="status">Cargando detalles…</p> }
+          @case ('error') {
+            <p role="alert">No pudimos cargar los detalles.</p>
+            <button class="secondary-action" type="button" (click)="retry(person)">Reintentar</button>
+          }
+          @case ('ready') {
+            <dl>
+              <div><dt>Especie</dt><dd>{{ speciesLabel(person.species) }}</dd></div>
+              <div><dt>Género</dt><dd>{{ genderLabels[person.gender] }}</dd></div>
+              <div><dt>Origen</dt><dd>{{ locationLabel(person.origin) }}</dd></div>
+              <div><dt>Última ubicación</dt><dd>{{ locationLabel(person.location) }}</dd></div>
+              <div><dt>Episodios</dt><dd>{{ person.episodeCount }}</dd></div>
+            </dl>
+          }
+        }
+      </div>
+    }
+  </div>
+</dialog>

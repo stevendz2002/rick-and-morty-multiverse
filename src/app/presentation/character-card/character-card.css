@@ -26,3 +26,5 @@
 .card-body { padding: 14px 16px 16px; }
 .card-body h3 { margin: 0; font-size: 1.08rem; overflow-wrap: anywhere; }
 .card-body p { margin: 4px 0 0; color: var(--muted); font-size: .88rem; }
+.details-button { padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; }
+.details-button::after { position: absolute; inset: 0; content: ''; }

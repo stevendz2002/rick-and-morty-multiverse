@@ -4,6 +4,7 @@ import { Subject, catchError, debounceTime, distinctUntilChanged, map, merge, of
 import { CharacterUseCases } from '../../application/character-use-cases';
 import type { CharacterPage, CharacterQuery } from '../../domain/character';
 import { CharacterCard } from '../character-card/character-card';
+import { CharacterDialog } from '../character-dialog/character-dialog';
 
 type CatalogState =
   | { kind: 'loading' | 'error' }
@@ -13,7 +14,7 @@ const initialQuery: CharacterQuery = { name: '', status: '', page: 1 };
 
 @Component({
   selector: 'app-explorer',
-  imports: [CharacterCard],
+  imports: [CharacterCard, CharacterDialog],
   templateUrl: './explorer.html',
 })
 export class Explorer {

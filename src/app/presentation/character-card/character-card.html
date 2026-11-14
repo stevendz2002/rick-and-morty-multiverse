@@ -5,7 +5,7 @@
     <span class="status" [attr.data-status]="person.status">{{ statusLabels[person.status] }}</span>
   </div>
   <div class="card-body">
-    <h3>{{ person.name }}</h3>
+    <h3><button type="button" class="details-button" (click)="selected.emit(person)">{{ person.name }}</button></h3>
     <p>{{ speciesLabel(person.species) }}</p>
   </div>
 </article>

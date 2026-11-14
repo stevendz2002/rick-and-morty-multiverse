@@ -34,7 +34,7 @@
         @if (state.data.characters.length) {
           <div class="character-grid">
             @for (character of state.data.characters; track character.id) {
-              <app-character-card [character]="character" />
+              <app-character-card [character]="character" (selected)="characterDialog.open($event)" />
             }
           </div>
           @if (state.data.pages > 1) {
@@ -55,3 +55,4 @@
     }
   </div>
 </section>
+<app-character-dialog #characterDialog />

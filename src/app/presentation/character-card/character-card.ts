@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import type { Character } from '../../domain/character';
 import { speciesLabel, statusLabels } from '../character-labels';
 
@@ -9,6 +9,7 @@ import { speciesLabel, statusLabels } from '../character-labels';
 })
 export class CharacterCard {
   readonly character = input.required<Character>();
+  readonly selected = output<Character>();
   protected readonly statusLabels = statusLabels;
   protected readonly speciesLabel = speciesLabel;
 }
