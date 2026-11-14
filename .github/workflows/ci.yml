@@ -1,0 +1,35 @@
+name: Angular CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Compilar Angular
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v7
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24.13.1'
+          cache: npm
+
+      - name: Configurar npm
+        run: npm install --global npm@11.10.1
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Compilar para producción
+        run: npm run build
