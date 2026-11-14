@@ -16,20 +16,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Descargar el código
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
 
-      - name: Configurar Node.js
-        uses: actions/setup-node@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: '24.13.1'
           cache: npm
 
-      - name: Configurar npm
-        run: npm install --global npm@11.10.1
+      - run: npm install --global npm@11.10.1
+      - run: npm ci
+      - run: npm run build -- --base-href /rick-and-morty-multiverse/
 
-      - name: Instalar dependencias
-        run: npm ci
+      - name: Preparar archivos para Pages
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist/multiverse-explorer/browser
 
-      - name: Compilar para producción
-        run: npm run build
+  deploy:
+    name: Publicar en GitHub Pages
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Publicar
+        id: deployment
+        uses: actions/deploy-pages@v4
