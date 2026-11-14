@@ -1,0 +1,11 @@
+@let person = character();
+<article class="card">
+  <div class="portrait">
+    <img [src]="person.image" alt="" width="300" height="300" loading="lazy" decoding="async">
+    <span class="status" [attr.data-status]="person.status">{{ statusLabels[person.status] }}</span>
+  </div>
+  <div class="card-body">
+    <h3>{{ person.name }}</h3>
+    <p>{{ speciesLabel(person.species) }}</p>
+  </div>
+</article>

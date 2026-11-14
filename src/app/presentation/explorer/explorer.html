@@ -1,0 +1,57 @@
+@let state = catalog();
+<section id="personajes" class="catalog" aria-labelledby="catalog-title">
+  <div class="section-heading">
+    <h2 id="catalog-title">Personajes</h2>
+    @if (state.kind === 'ready' && state.data.total > 0) {
+      <span class="result-count">{{ state.data.total }} {{ state.data.total === 1 ? 'resultado' : 'resultados' }}</span>
+    }
+  </div>
+  <div class="catalog-controls">
+    <label class="search-field">
+      <span class="search-icon" aria-hidden="true"></span>
+      <span class="sr-only">Buscar por nombre</span>
+      <input #nameInput type="search" placeholder="Buscar por nombre…" [value]="query().name" (input)="search(nameInput.value)">
+    </label>
+    <div class="filter-list" role="group" aria-label="Filtrar por estado">
+      @for (filterOption of filters; track filterOption.value) {
+        <button type="button" [attr.aria-pressed]="query().status === filterOption.value" (click)="filter(filterOption.value)">{{ filterOption.label }}</button>
+      }
+    </div>
+  </div>
+  <div [attr.aria-busy]="state.kind === 'loading'">
+    @switch (state.kind) {
+      @case ('loading') {
+        <div class="feedback" role="status"><span class="spinner" aria-hidden="true"></span><p>Cargando personajes…</p></div>
+      }
+      @case ('error') {
+        <div class="feedback">
+          <h3 role="alert">No pudimos cargar los personajes</h3>
+          <p>Comprueba tu conexión y vuelve a intentarlo.</p>
+          <button type="button" class="secondary-action" (click)="retry()">Reintentar</button>
+        </div>
+      }
+      @case ('ready') {
+        @if (state.data.characters.length) {
+          <div class="character-grid">
+            @for (character of state.data.characters; track character.id) {
+              <app-character-card [character]="character" />
+            }
+          </div>
+          @if (state.data.pages > 1) {
+            <nav class="pagination" aria-label="Paginación de personajes">
+              <button type="button" class="secondary-action" [disabled]="state.query.page === 1 || !canPaginate()" (click)="paginate(state.query.page - 1)"><span aria-hidden="true">←</span> Anterior</button>
+              <span aria-live="polite">Página {{ state.query.page }} de {{ state.data.pages }}</span>
+              <button type="button" class="secondary-action" [disabled]="state.query.page === state.data.pages || !canPaginate()" (click)="paginate(state.query.page + 1)">Siguiente <span aria-hidden="true">→</span></button>
+            </nav>
+          }
+        } @else {
+          <div class="feedback">
+            <h3 role="status">No encontramos personajes</h3>
+            <p>Prueba con otro nombre o estado.</p>
+            <button type="button" class="secondary-action" (click)="reset()">Limpiar filtros</button>
+          </div>
+        }
+      }
+    }
+  </div>
+</section>

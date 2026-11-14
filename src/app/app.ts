@@ -1,16 +1,9 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { Explorer } from './presentation/explorer/explorer';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  template: `
-    <h1>Hello, {{ title() }}</h1>
-
-    <router-outlet />
-  `,
-  styles: [],
+  imports: [Explorer],
+  templateUrl: './app.html',
 })
-export class App {
-  protected readonly title = signal('multiverse-explorer');
-}
+export class App {}
