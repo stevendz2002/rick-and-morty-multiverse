@@ -1,8 +1,12 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideRouter } from '@angular/router';
-
-import { routes } from './app.routes';
+import { provideHttpClient } from '@angular/common/http';
+import { inject, type ApplicationConfig } from '@angular/core';
+import { CharacterUseCases } from './application/character-use-cases';
+import { HttpCharacterRepository } from './infrastructure/http-character-repository';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideBrowserGlobalErrorListeners(), provideRouter(routes)],
+  providers: [
+    provideHttpClient(),
+    HttpCharacterRepository,
+    { provide: CharacterUseCases, useFactory: () => new CharacterUseCases(inject(HttpCharacterRepository)) },
+  ],
 };
