@@ -1,14 +1,21 @@
-name: Angular CI
+
+name: Angular CI & Deploy
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -16,36 +23,54 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v7
+      - name: Descargar repositorio
+        uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v7
+      - name: Configurar Node.js
+        uses: actions/setup-node@v7
         with:
           node-version: '24.13.1'
           cache: npm
 
-      - run: npm install --global npm@11.10.1
-      - run: npm ci
-      - run: npm run build -- --base-href /rick-and-morty-multiverse/
+      - name: Configurar npm
+        run: npm install --global npm@11.10.1
 
-      - name: Preparar archivos para Pages
-        if: github.ref == 'refs/heads/main'
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Compilar Angular para GitHub Pages
+        run: npm run build -- --base-href /rick-and-morty-multiverse/
+
+      - name: Verificar compilacion
+        run: |
+          test -f dist/multiverse-explorer/browser/index.html
+
+      - name: Configurar GitHub Pages
+        if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v5
+
+      - name: Subir archivos compilados
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v4
         with:
           path: dist/multiverse-explorer/browser
 
   deploy:
     name: Publicar en GitHub Pages
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
+
     permissions:
+      contents: read
       pages: write
       id-token: write
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Publicar
+      - name: Publicar aplicacion
         id: deployment
         uses: actions/deploy-pages@v4
