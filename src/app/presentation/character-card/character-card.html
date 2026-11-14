@@ -8,4 +8,11 @@
     <h3><button type="button" class="details-button" (click)="selected.emit(person)">{{ person.name }}</button></h3>
     <p>{{ speciesLabel(person.species) }}</p>
   </div>
+  <button
+    type="button"
+    class="favorite-button"
+    [attr.aria-pressed]="favorite()"
+    [attr.aria-label]="person.name + ' en favoritos'"
+    (click)="favoriteToggled.emit(person)"
+  ><span aria-hidden="true">{{ favorite() ? '♥' : '♡' }}</span></button>
 </article>

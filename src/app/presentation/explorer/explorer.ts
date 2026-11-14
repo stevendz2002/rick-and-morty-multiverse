@@ -1,10 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, input, output, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Subject, catchError, debounceTime, distinctUntilChanged, map, merge, of, startWith, switchMap } from 'rxjs';
 import { CharacterUseCases } from '../../application/character-use-cases';
-import type { CharacterPage, CharacterQuery } from '../../domain/character';
+import type { Character, CharacterPage, CharacterQuery } from '../../domain/character';
 import { CharacterCard } from '../character-card/character-card';
-import { CharacterDialog } from '../character-dialog/character-dialog';
 
 type CatalogState =
   | { kind: 'loading' | 'error' }
@@ -14,10 +13,13 @@ const initialQuery: CharacterQuery = { name: '', status: '', page: 1 };
 
 @Component({
   selector: 'app-explorer',
-  imports: [CharacterCard, CharacterDialog],
+  imports: [CharacterCard],
   templateUrl: './explorer.html',
 })
 export class Explorer {
+  readonly favoriteIds = input.required<ReadonlySet<number>>();
+  readonly selected = output<Character>();
+  readonly favoriteToggled = output<Character>();
   private readonly characters = inject(CharacterUseCases);
   private readonly searches = new Subject<string>();
   private readonly requests = new Subject<CharacterQuery>();

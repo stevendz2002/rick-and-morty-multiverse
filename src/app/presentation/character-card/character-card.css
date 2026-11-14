@@ -28,3 +28,27 @@
 .card-body p { margin: 4px 0 0; color: var(--muted); font-size: .88rem; }
 .details-button { padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; }
 .details-button::after { position: absolute; inset: 0; content: ''; }
+.favorite-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  width: 39px;
+  height: 39px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid #ffffff39;
+  border-radius: 50%;
+  background: #11191bed;
+  color: var(--text);
+  font-size: 1.45rem;
+  line-height: 1;
+  transition: color .2s, border-color .2s, transform .2s;
+}
+.favorite-button:hover { transform: scale(1.08); }
+.favorite-button:is(:hover, [aria-pressed='true']) { border-color: var(--portal); color: var(--portal); }
+
+@media (max-width: 480px) {
+  .portrait .status { top: auto; bottom: 9px; left: 9px; }
+  .favorite-button { top: 8px; right: 8px; }
+}

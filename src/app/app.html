@@ -1,7 +1,10 @@
 <header class="site-header">
   <div class="shell header-inner">
     <a class="brand" href="#inicio"><span class="brand-mark" aria-hidden="true"></span> Multiverse<span>Explorer</span></a>
-    <nav aria-label="Navegación principal"><a href="#personajes">Explorar</a></nav>
+    <nav aria-label="Navegación principal">
+      <a href="#personajes">Explorar</a>
+      <a href="#favoritos">Favoritos</a>
+    </nav>
   </div>
 </header>
 <main id="inicio" class="shell">
@@ -13,7 +16,29 @@
     </div>
     <div class="portal" aria-hidden="true"><div class="portal-core"></div></div>
   </section>
-  <app-explorer />
+  <app-explorer [favoriteIds]="savedIds()" (selected)="characterDialog.open($event)" (favoriteToggled)="toggleFavorite($event)" />
+  @if (storageError()) {
+    <p class="storage-error" role="alert">No pudimos guardar el cambio. Comprueba que el navegador permite el almacenamiento local.</p>
+  }
+  <section id="favoritos" class="favorites" aria-labelledby="favorites-title">
+    <div class="section-heading">
+      <h2 id="favorites-title">Favoritos</h2>
+      <span class="result-count">{{ savedCharacters().length }} {{ savedCharacters().length === 1 ? 'guardado' : 'guardados' }}</span>
+    </div>
+    @if (savedCharacters().length) {
+      <div class="character-grid">
+        @for (character of savedCharacters(); track character.id) {
+          <app-character-card [character]="character" [favorite]="true" (selected)="characterDialog.open($event)" (favoriteToggled)="toggleFavorite($event)" />
+        }
+      </div>
+    } @else {
+      <div class="feedback">
+        <h3>Aún no tienes favoritos</h3>
+        <p>Pulsa el corazón de una tarjeta para guardarla aquí.</p>
+      </div>
+    }
+  </section>
+  <app-character-dialog #characterDialog />
 </main>
 <footer class="site-footer">
   <div class="shell">Multiverse Explorer <a href="https://rickandmortyapi.com/documentation">Rick and Morty API <span aria-hidden="true">↗</span></a></div>
