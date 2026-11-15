@@ -21,6 +21,9 @@ jobs:
   build:
     name: Compilar Angular
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
 
     steps:
       - name: Descargar repositorio
@@ -38,26 +41,35 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      - name: Detectar la ruta pública de GitHub Pages
+        id: pages
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/configure-pages@v5
+      - name: Ejecutar pruebas
+        run: node --experimental-transform-types --test
       - name: Compilar Angular para GitHub Pages
-        run: npm run build -- --base-href /rick-and-morty-multiverse/
+        env:
+          PAGES_BASE: ${{ steps.pages.outputs.base_path }}
+          REPOSITORY_NAME: ${{ github.event.repository.name }}
+          PAGES_CONFIGURED: ${{ steps.pages.outcome }}
+        run: |
+          base="$PAGES_BASE"
+          if [ "$PAGES_CONFIGURED" = skipped ]; then base="/$REPOSITORY_NAME"; fi
+          npm run build -- --base-href "${base%/}/"
 
       - name: Verificar compilacion
         run: |
           test -f dist/multiverse-explorer/browser/index.html
 
-      - name: Configurar GitHub Pages
-        if: github.event_name != 'pull_request'
-        uses: actions/configure-pages@v5
-
       - name: Subir archivos compilados
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v4
         with:
           path: dist/multiverse-explorer/browser
 
   deploy:
     name: Publicar en GitHub Pages
-    if: github.event_name != 'pull_request'
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
 
